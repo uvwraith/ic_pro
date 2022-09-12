@@ -1,0 +1,1 @@
+var tag = document.createElement('style');tag.setAttribute('type', 'text/css');tag.innerHTML = '.bcFloat {display: none !important;} .bc-minimize-container {display: none !important;} .widget-mobile {z-index: 99999 !important;} .widget-mobile {visibility: hidden;}';document.body.appendChild(tag);
